@@ -2,7 +2,6 @@
 #
 # Script to balance accounts between servers
 #
-
 use warnings;
 
 START:print "\nOperations:
@@ -34,8 +33,8 @@ if ($answer == 1) {
         $count = `zmprov -l gaa -s $line |wc -l`;
         $percent = ($count*100)/$numbersOfAccounts;
         $percent = sprintf("%.1f", $percent);
-        $count = chomp($count);
-        print "$line: $count ($percent%)\n";
+#		$count = chomp ($count);							This does not work as intended yet 
+		print "$line: $count ($percent%)\n";
     }
     goto START
 } elsif ($answer == 4) {
@@ -60,12 +59,22 @@ if ($answer == 1) {
         $count = `zmprov -l gaa -s $line |wc -l`;
         $percent = ($count*100)/$numbersOfAccounts;
         $percent = sprintf("%.1f", $percent);
-        $count = chomp($count);
-        print "$line: $count ($percent%)\n";
+#       $count = chomp ($count);                            This does not work as intended yet
+		print "$line: $count ($percent%)\n";
         $shouldHave = $numbersOfAccounts / $numbersOfMailServers;
-        print "$line should have $shouldHave numbers of account, but currently have $count."
-    }
-    goto START
+		$shouldHave = sprintf("%.0f", $shouldHave);
+		print "$line should have $shouldHave numbers of account, but currently have $count.\n\n";
+   	    $result = $shouldHave - $count;
+		if ($result == abs($result)) {
+			print "This server should get accounts";
+			#place commands for transfering accounts
+		} elsif ($result != abs($result)) {
+			print "This server should have less accounts";
+			#let servers who need accounts do the pickup
+		}
+	}
+	print "Starting relocating accounts...";
+
 } else {
     print "Your selection is not valid\n";
     goto START

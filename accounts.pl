@@ -53,6 +53,8 @@ if ($answer == 1) {
     print "\nChecking for total numbers of accounts per server\n";
 
     $numbersOfAccounts = `zmprov -l gaa|wc -l`;
+    $mailStoreServers = `zmprov gas mailbox`;
+    $numbersOfMailServers = $mailStoreServers =~ tr/\n//;
     my @lines = split /\n/, `zmprov gas mailbox`;
     foreach my $line (@lines) {
         $count = `zmprov -l gaa -s $line |wc -l`;
@@ -60,9 +62,9 @@ if ($answer == 1) {
         $percent = sprintf("%.1f", $percent);
         $count = chomp($count);
         print "$line: $count ($percent%)\n";
-
+        $shouldHave = $numbersOfAccounts / $numbersOfMailServers;
+        print "$line should have $shouldHave numbers of account, but currently have $count."
     }
-
     goto START
 } else {
     print "Your selection is not valid\n";
